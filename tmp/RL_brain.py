@@ -59,7 +59,7 @@ class Brian:
             obs = torch.FloatTensor(obs)
             obs = obs.unsqueeze(0).type(dtype)
             out = self.q_eval(obs)
-            return np.argmax(out.detach()).item()
+            return np.argmax(out.detach().cpu()).item()
         return np.random.randint(0, self.num_action - 1)
 
     def store_transition(self, obs, action, reward, obs_):
