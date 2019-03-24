@@ -11,4 +11,4 @@ import numpy as np
 def RGB_to_gary(obs):
     img = Image.fromarray(obs)
     img = img.convert('L')
-    return np.asarray(img)/255.0
+    return np.asarray(img)

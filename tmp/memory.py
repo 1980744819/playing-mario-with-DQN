@@ -13,10 +13,10 @@ class Memory():
         self.index = 0
         self.count = 0
         self.num_in_memory = 0
-        self.obs = np.zeros((size, w, h))
-        self.actions = np.zeros((size,))
-        self.rewards = np.zeros((size,))
-        self.obs_ = np.zeros((size, w, h))
+        self.obs = np.zeros((size, w, h), dtype=np.uint8)
+        self.actions = np.zeros((size,), dtype=np.uint8)
+        self.rewards = np.zeros((size,), dtype=np.float32)
+        self.obs_ = np.zeros((size, w, h), dtype=np.uint8)
         self.obs_shape = [w, h]
 
     def store_transition(self, obs, action, reward, obs_):

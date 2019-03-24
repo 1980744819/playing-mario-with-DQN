@@ -58,8 +58,8 @@ class Brian:
         if np.random.uniform() < self.epsilon and obs.shape[0] == self.channals:
             obs = torch.FloatTensor(obs)
             obs = obs.unsqueeze(0).type(dtype)
-            out = self.q_eval(obs)
-            return np.argmax(out.detach()).item()
+            out = self.q_eval(obs/255.0)
+            return np.argmax(out.detach().cpu()).item()
         return np.random.randint(0, self.num_action - 1)
 
     def store_transition(self, obs, action, reward, obs_):
@@ -75,8 +75,8 @@ class Brian:
         # q_next = self.q_next(torch.FloatTensor(obs__batch))
         # q_eval = self.q_eval(torch.FloatTensor(obs_batch))
         # reward_batch = torch.FloatTensor(reward_batch)
-        q_next = self.q_next(obs__batch)
-        q_eval = self.q_eval(obs_batch)
+        q_next = self.q_next(obs__batch/255.0)
+        q_eval = self.q_eval(obs_batch/255.0)
         reward_batch = torch.from_numpy(reward_batch)
 
         if USE_CUDA:
