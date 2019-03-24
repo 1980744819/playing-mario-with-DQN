@@ -1,3 +1,4 @@
+PIL
 gym==0.12.0
 gym-super-mario-bros==7.1.6
 matplotlib==3.0.3
