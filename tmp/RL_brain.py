@@ -36,8 +36,8 @@ class Brian:
                  e_greedy_increment,
                  batch_size,
                  replace_target_iter):
-        self.q_eval = CNN(in_channels=input_args, num_action=num_actions)
-        self.q_next = CNN(in_channels=input_args, num_action=num_actions)
+        self.q_eval = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
+        self.q_next = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
         self.memory = Memory(memory_size, shape[0], shape[1])
         self.channals = input_args
         self.num_action = num_actions
@@ -57,7 +57,7 @@ class Brian:
     def choose_action(self, obs):
         if np.random.uniform() < self.epsilon and obs.shape[0] == self.channals:
             obs = torch.FloatTensor(obs)
-            obs = obs.unsqueeze(0)
+            obs = obs.unsqueeze(0).type(dtype)
             out = self.q_eval(obs)
             return np.argmax(out.detach()).item()
         return np.random.randint(0, self.num_action - 1)
