@@ -51,7 +51,7 @@ class Memory():
                 obs_after_frames[i] = np.concatenate(
                     (self.obs_[after_start:self.num_in_memory], self.obs_[0:after_end + 1]))
             else:
-                print('after_start,after_end', after_start, after_end)
+                # print('after_start,after_end', after_start, after_end)
                 obs_after_frames[i] = self.obs_[after_start:after_end + 1]
         action_batch = self.actions[nums]
         rewards = self.rewards[nums]

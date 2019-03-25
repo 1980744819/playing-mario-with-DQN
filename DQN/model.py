@@ -49,12 +49,13 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2),
 
         )  # 32 6 6
-        self.fc4 = nn.Linear(in_features=6 * 6 * 32, out_features=256)
-        self.fc5 = nn.Linear(in_features=256, out_features=num_action)
+        self.fc4 = nn.Linear(in_features=6 * 6 * 32, out_features=512)
+        self.fc5 = nn.Linear(in_features=512, out_features=num_action)
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.fc4(x.view(x.size(0), -1))
+        x = F.dropout(x, p=0.5, training=self.training)
         x = self.fc5(x)
         return x

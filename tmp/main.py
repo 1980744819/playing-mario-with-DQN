@@ -44,7 +44,7 @@ if __name__ == '__main__':
         last_info = info
         reward = re
 
-        print(action, '\t', re)
+        print(action, '\t', re, '\t', info)
         obs_ = RGB_to_gary(obs_)
         brain.store_transition(obs, action, reward, obs_)
         if step > 2000 and step % 100 == 0:
