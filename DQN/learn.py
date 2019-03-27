@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @File  : learn.py
-# @Author: zixiao@ainirobot.com
+# @Author: 1980744819@qq.com
 # @Date  : 2019-03-20
 # @Desc  :
 from settings import Actions
@@ -54,7 +54,6 @@ def learning(
             return model(Variable(obs, volatile=True)).data.max(1)[1].view(1, 1)
         else:
             return torch.IntTensor([[random.randrange(num_actions)]])
-
     q_eval = net(input_arg, num_actions).type(dtype)
     q_target = net(input_arg, num_actions).type(dtype)
     op = optim.RMSprop(q_eval.parameters(), lr=LEARNING_RATE, alpha=ALPHA, eps=EPS)

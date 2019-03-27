@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @File  : mario.py
-# @Author: zixiao@ainirobot.com
+# @Author: 1980744819@qq.com
 # @Date  : 2019-03-18
 # @Desc  :
 from nes_py.wrappers import BinarySpaceToDiscreteSpaceEnv
