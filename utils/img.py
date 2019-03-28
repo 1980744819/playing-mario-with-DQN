@@ -8,7 +8,7 @@ from PIL import Image
 import numpy as np
 
 
-def RGB_to_gary(obs):
+def RGB_to_gray(obs):
     img = Image.fromarray(obs)
     img = img.convert('L')
     return np.asarray(img)

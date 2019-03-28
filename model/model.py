@@ -56,6 +56,38 @@ class CNN(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.fc4(x.view(x.size(0), -1))
-        x = F.dropout(x, p=0.5, training=self.training)
+        # x = F.dropout(x, p=0.5, training=self.training)
+        x = self.fc5(x)
+        return x
+
+
+class CNN_2(nn.Module):
+    def __init__(self, in_channels, num_action):
+        super(CNN_2, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=8, stride=4),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.fc4 = nn.Linear(in_features=2 * 3 * 128, out_features=512)
+        self.fc5 = nn.Linear(in_features=512, out_features=num_action)
+
+    def forward(self, x):  # 8,240,256
+        x = self.conv1(x)  # 32 29,31
+        x = self.conv2(x)  # 64 6 6
+        x = self.conv3(x)  # 64 6 7
+        x = self.fc4(x.view(x.size(0), -1))
+        # x = F.dropout(x, p=0.5, training=self.training)
         x = self.fc5(x)
         return x
