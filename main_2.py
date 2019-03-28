@@ -15,7 +15,7 @@ from settings.action_space import Actions
 if __name__ == '__main__':
     state = env.reset()
     state = RGB_to_gray(state)
-    frame_len = 8
+    frame_len = 4
     learning_start = 2000
     brain = Brain(memory_size=100000,
                   input_args=frame_len,
