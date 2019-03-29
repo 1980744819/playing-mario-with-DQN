@@ -164,7 +164,7 @@ class Brain_2:
         return np.random.randint(0, self.num_action - 1)
 
     def store_transition(self, action, reward, obs_):
-        self.memory.store_transition( action, reward, obs_)
+        self.memory.store_transition(action, reward, obs_)
 
     def learn(self):
         if self.learn_step_count == self.replace_target_iter:
@@ -174,13 +174,13 @@ class Brain_2:
             torch.save(self.q_eval.state_dict(), 'q_eval.pkl')
             torch.save(self.q_next.state_dict(), 'q_next.pkl')
             self.learn_step = 0
-        obs_batch, act_batch, reward_batch, obs__batch = self.memory.get_memory(self.batch_size)
+        obs_batch, act_batch, reward_batch, obs_batch_ = self.memory.get_memory(self.batch_size)
         obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype))
-        obs__batch = Variable(torch.from_numpy(obs__batch).type(dtype))
+        obs_batch_ = Variable(torch.from_numpy(obs_batch_).type(dtype))
         # q_next = self.q_next(torch.FloatTensor(obs__batch))
         # q_eval = self.q_eval(torch.FloatTensor(obs_batch))
         # reward_batch = torch.FloatTensor(reward_batch)
-        q_next = self.q_next(obs__batch / 255.0)
+        q_next = self.q_next(obs_batch_ / 255.0)
         q_eval = self.q_eval(obs_batch / 255.0)
         reward_batch = torch.from_numpy(reward_batch)
 
@@ -206,3 +206,42 @@ class Brain_2:
 
     def store_start_frame(self, obs):
         self.memory.store_frame(obs)
+
+    def double_learn(self):
+        if self.learn_step_count == self.replace_target_iter:
+            self.learn_step_count = 0
+            self.q_next.load_state_dict(self.q_eval.state_dict())
+        if self.learn_step == self.save_step:
+            torch.save(self.q_eval.state_dict(), 'q_eval.pkl')
+            torch.save(self.q_next.state_dict(), 'q_next.pkl')
+            self.learn_step = 0
+        obs_batch, act_batch, reward_batch, obs_batch_ = self.memory.get_memory(self.batch_size)
+        obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype))
+        obs_batch_ = Variable(torch.from_numpy(obs_batch_).type(dtype))
+        # q_next = self.q_next(torch.FloatTensor(obs_batch_))
+        # q_eval = self.q_eval(torch.FloatTensor(obs_batch))
+        # reward_batch = torch.FloatTensor(reward_batch)
+        q_next = self.q_next(obs_batch_ / 255.0)
+        q_eval_next = self.q_eval(obs_batch_ / 255.0)
+        q_eval = self.q_eval(obs_batch / 255.0)
+
+        reward_batch = torch.from_numpy(reward_batch)
+
+        if USE_CUDA:
+            # act_batch = act_batch.cuda()
+            reward_batch = reward_batch.cuda()
+
+        q_target = q_eval.clone().detach()
+        batch_index = np.arange(self.batch_size)
+        max_act_q_eval_next = torch.argmax(q_eval_next, dim=1)
+        print(max_act_q_eval_next)
+        select_q_next = q_next[batch_index, max_act_q_eval_next]
+        q_target[batch_index, act_batch] = reward_batch.float() + self.gamma * select_q_next
+        loss = self.loss_func(q_eval, q_target)
+        self.op.zero_grad()
+        loss.backward()
+        self.op.step()
+
+        self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
+        self.learn_step_count += 1
+        self.learn_step += 1

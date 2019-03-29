@@ -21,7 +21,7 @@ if __name__ == '__main__':
                   input_args=frame_len,
                   num_actions=7,
                   shape=state.shape,
-                  learning_rate=0.0001,
+                  learning_rate=0.00025,
                   reward_decay=0.9,
                   e_greedy=0.9,
                   e_greedy_increment=0.001,
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             obs[j] = state
         info = env.unwrapped._get_info()
         reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15
+                info['life'] - last_info['life']) * 15-0.1
         reward = reward / 15.0
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
@@ -70,13 +70,13 @@ if __name__ == '__main__':
             obs[j] = state
         info = env.unwrapped._get_info()
         reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15
+                info['life'] - last_info['life']) * 15-0.1
         reward = reward / 15.0
-        print(action, reward, brain.epsilon)
+        print(action, reward, brain.epsilon, step)
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
         if step % 200 == 0:
-            brain.learn()
+            brain.double_learn()
         if done:
             env.reset()
             last_info['time'] = 0
