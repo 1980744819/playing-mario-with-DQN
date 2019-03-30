@@ -82,9 +82,8 @@ if __name__ == '__main__':
             c = -1
         reward = a + b + c * 15
         reward = reward / 15.0
-        print(info)
-        if reward < -0.7:
-            print(action, reward, brain.epsilon, step)
+
+        print(action, reward, brain.epsilon, step)
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
         if step % 200 == 0:
