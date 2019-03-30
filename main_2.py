@@ -6,7 +6,8 @@
 # @Desc  :
 from env.gym_super_mario_bros import env
 from utils.img import RGB_to_gray
-from brain.RL_brain import Brain_2 as Brain
+from brain.RL_brain import Brain_2
+from brain.PER_brian import Brain
 import numpy as np
 from PIL import Image
 
@@ -16,8 +17,8 @@ if __name__ == '__main__':
     state = env.reset()
     state = RGB_to_gray(state)
     frame_len = 4
-    learning_start = 2000
-    brain = Brain(memory_size=100000,
+    memory_size = 100000
+    brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
                   shape=state.shape,
@@ -36,7 +37,8 @@ if __name__ == '__main__':
         obs[i] = ob
     brain.store_start_frame(obs)
     last_info = env.unwrapped._get_info()
-    for i in range(learning_start):
+    for i in range(memory_size):
+        print(i)
         action = env.action_space.sample()
         states, re, done, info = env.step(action)
         states = RGB_to_gray(states)
@@ -49,7 +51,7 @@ if __name__ == '__main__':
             obs[j] = state
         info = env.unwrapped._get_info()
         reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15-0.1
+                info['life'] - last_info['life']) * 15
         reward = reward / 15.0
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
@@ -70,7 +72,7 @@ if __name__ == '__main__':
             obs[j] = state
         info = env.unwrapped._get_info()
         reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15-0.1
+                info['life'] - last_info['life']) * 15
         reward = reward / 15.0
         print(action, reward, brain.epsilon, step)
         brain.store_transition(reward=reward, action=action, obs_=obs)

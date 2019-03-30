@@ -7,11 +7,11 @@
 from model.model import CNN_2 as CNN
 from Memory.memory import Memory, Memory_2
 import numpy as np
-from settings.action_space import Actions
 import torch
 import torch.nn as nn
 import torch.autograd as autograd
 import os
+from settings.conf import *
 
 USE_CUDA = torch.cuda.is_available()
 dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
@@ -39,12 +39,12 @@ class Brian:
 
         self.q_eval = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
         self.q_next = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
-        if os.path.isfile('q_eval.pkl'):
+        if os.path.isfile(save_q_eval_path):
             print('load q_eval ...')
-            self.q_eval.load_state_dict(torch.load('q_eval.pkl'))
-        if os.path.isfile('q_next.pkl'):
+            self.q_eval.load_state_dict(torch.load(save_q_eval_path))
+        if os.path.isfile(save_q_next_path):
             print('load q_next ...')
-            self.q_next.load_state_dict(torch.load('q_next.pkl'))
+            self.q_next.load_state_dict(torch.load(save_q_next_path))
         self.memory = Memory(memory_size, shape[0], shape[1])
         self.channals = input_args
         self.num_action = num_actions
@@ -52,7 +52,6 @@ class Brian:
         self.gamma = reward_decay
         self.batch_size = batch_size
         self.replace_target_iter = replace_target_iter
-        self.actions = Actions()
         self.epsilon_max = e_greedy
         self.epsilon_increment = e_greedy_increment
         self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
@@ -80,8 +79,8 @@ class Brian:
             self.learn_step_count = 0
             self.q_next.load_state_dict(self.q_eval.state_dict())
         if self.learn_step == self.save_step:
-            torch.save(self.q_eval.state_dict(), 'q_eval.pkl')
-            torch.save(self.q_next.state_dict(), 'q_next.pkl')
+            torch.save(self.q_eval.state_dict(), save_q_eval_path)
+            torch.save(self.q_next.state_dict(), save_q_next_path)
             self.learn_step = 0
         obs_batch, act_batch, reward_batch, obs__batch = self.memory.get_memory(self.batch_size, self.channals)
         obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype))
@@ -130,12 +129,12 @@ class Brain_2:
 
         self.q_eval = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
         self.q_next = CNN(in_channels=input_args, num_action=num_actions).type(dtype)
-        if os.path.isfile('q_eval.pkl'):
+        if os.path.isfile(save_q_eval_path):
             print('load q_eval ...')
-            self.q_eval.load_state_dict(torch.load('q_eval.pkl'))
-        if os.path.isfile('q_next.pkl'):
+            self.q_eval.load_state_dict(torch.load(save_q_eval_path))
+        if os.path.isfile(save_q_next_path):
             print('load q_next ...')
-            self.q_next.load_state_dict(torch.load('q_next.pkl'))
+            self.q_next.load_state_dict(torch.load(save_q_next_path))
         self.memory = Memory_2(memory_size, shape[0], shape[1], input_args)
         self.channels = input_args
         self.num_action = num_actions
@@ -143,7 +142,6 @@ class Brain_2:
         self.gamma = reward_decay
         self.batch_size = batch_size
         self.replace_target_iter = replace_target_iter
-        self.actions = Actions()
         self.epsilon_max = e_greedy
         self.epsilon_increment = e_greedy_increment
         self.epsilon = e_greedy_start
@@ -171,8 +169,8 @@ class Brain_2:
             self.learn_step_count = 0
             self.q_next.load_state_dict(self.q_eval.state_dict())
         if self.learn_step == self.save_step:
-            torch.save(self.q_eval.state_dict(), 'q_eval.pkl')
-            torch.save(self.q_next.state_dict(), 'q_next.pkl')
+            torch.save(self.q_eval.state_dict(), save_q_eval_path)
+            torch.save(self.q_next.state_dict(), save_q_next_path)
             self.learn_step = 0
         obs_batch, act_batch, reward_batch, obs_batch_ = self.memory.get_memory(self.batch_size)
         obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype))
