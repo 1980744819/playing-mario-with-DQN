@@ -17,7 +17,7 @@ if __name__ == '__main__':
     state = env.reset()
     state = RGB_to_gray(state)
     frame_len = 4
-    memory_size = 100000
+    memory_size = 1000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     while True:
         last_frame = brain.get_last_memory()
         action = brain.choose_action(last_frame)
-        obs_, re, done, info = env.step(action)
+        obs_, re, done, info = env.step(1)
         obs_ = RGB_to_gray(obs_)
         obs[0] = obs_
         env.render()
@@ -71,10 +71,20 @@ if __name__ == '__main__':
             state = RGB_to_gray(state)
             obs[j] = state
         info = env.unwrapped._get_info()
-        reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15
+        b = info['time'] - last_info['time']
+        if b > 0:
+            b = 0
+        a = info['x_pos'] - last_info['x_pos']
+        if a < -20:
+            a = 0
+        c = int(info['life']) - int(last_info['life'])
+        if c > 0:
+            c = -1
+        reward = a + b + c * 15
         reward = reward / 15.0
-        print(action, reward, brain.epsilon, step)
+        print(info)
+        if reward < -0.7:
+            print(action, reward, brain.epsilon, step)
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
         if step % 200 == 0:
