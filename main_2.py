@@ -50,8 +50,16 @@ if __name__ == '__main__':
             state = RGB_to_gray(state)
             obs[j] = state
         info = env.unwrapped._get_info()
-        reward = info['x_pos'] - last_info['x_pos'] + info['time'] - last_info['time'] + (
-                info['life'] - last_info['life']) * 15
+        b = info['time'] - last_info['time']
+        if b > 0:
+            b = 0
+        a = info['x_pos'] - last_info['x_pos']
+        if a < -20:
+            a = 0
+        c = int(info['life']) - int(last_info['life'])
+        if c > 0:
+            c = -1
+        reward = a + b + c * 15
         reward = reward / 15.0
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
