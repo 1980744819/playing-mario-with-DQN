@@ -88,6 +88,8 @@ class SumTree(object):
                     value -= self.tree[left_index]
                     parent_index = right_index
         leaf_index = parent_index
+        if leaf_index == 0:
+            leaf_index = 1
         data_index = leaf_index - (self.data_size - 1)
         data_index_ = (data_index + 1) % self.data_size
 
@@ -199,7 +201,7 @@ class Brain:
         self.abs_errors_func = AbsErrorLoss()
         # self.loss_func = nn.CrossEntropyLoss()
         self.abs_errors = torch
-        self.save_step = 2000
+        self.save_step = 500
         self.learn_step = 0
 
     def choose_action(self, obs):
@@ -277,7 +279,7 @@ class Brain:
         q_target = q_eval.clone().detach()
         batch_index = np.arange(self.batch_size)
         max_act_q_eval_next = torch.argmax(q_eval_next, dim=1)
-        print(max_act_q_eval_next)
+        # print(max_act_q_eval_next)
         select_q_next = q_next[batch_index, max_act_q_eval_next]
         q_target[batch_index, batch_action] = reward_batch.float() + self.gamma * select_q_next
         loss = self.loss_func(IS_weights, q_eval, q_target)

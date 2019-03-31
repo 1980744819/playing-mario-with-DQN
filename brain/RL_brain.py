@@ -232,7 +232,7 @@ class Brain_2:
         q_target = q_eval.clone().detach()
         batch_index = np.arange(self.batch_size)
         max_act_q_eval_next = torch.argmax(q_eval_next, dim=1)
-        print(max_act_q_eval_next)
+        # print(max_act_q_eval_next)
         select_q_next = q_next[batch_index, max_act_q_eval_next]
         q_target[batch_index, act_batch] = reward_batch.float() + self.gamma * select_q_next
         loss = self.loss_func(q_eval, q_target)
