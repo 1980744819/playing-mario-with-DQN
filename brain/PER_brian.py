@@ -256,6 +256,7 @@ class Brain:
         return self.memory.get_last_frame()
 
     def double_learn(self):
+        print(self.learn_step_count)
         if self.learn_step_count == self.replace_target_iter:
             self.learn_step_count = 0
             self.q_next.load_state_dict(self.q_eval.state_dict())
