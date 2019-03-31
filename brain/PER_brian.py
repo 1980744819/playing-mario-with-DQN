@@ -5,7 +5,7 @@
 # @Date  : 2019-03-30
 # @Desc  :
 import numpy as np
-from model.model import CNN_2 as CNN
+from model.model import CNN_2, DuelingCNN as CNN
 from settings.conf import *
 import torch
 import torch.nn as nn
