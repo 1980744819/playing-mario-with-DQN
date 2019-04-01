@@ -4,11 +4,18 @@
 # @Author: 1980744819@qq.com
 # @Date  : 2019-03-23
 # @Desc  :
-from PIL import Image
 import numpy as np
+from PIL import Image, ImageSequence
 
 
 def RGB_to_gray(obs):
-    img = Image.fromarray(obs)
+    img = Image.fromarray(obs).crop((0, 40, 256, 240)).resize((200, 200))
     img = img.convert('L')
     return np.asarray(img)
+
+
+def get_gif(ims):
+    sequence = []
+    for item in ims:
+        sequence.append(Image.fromarray(item))
+    sequence[0].save('tmp.gif', save_all=True, append_images=sequence[1:])

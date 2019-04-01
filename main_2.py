@@ -6,18 +6,15 @@
 # @Desc  :
 from env.gym_super_mario_bros import env
 from utils.img import RGB_to_gray
-from brain.RL_brain import Brain_2
 from brain.PER_brian import Brain
 import numpy as np
-from PIL import Image
 
-from settings.action_space import Actions
 
 if __name__ == '__main__':
     state = env.reset()
     state = RGB_to_gray(state)
-    frame_len = 4
-    memory_size = 50000
+    frame_len = 8
+    memory_size = 100000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -28,7 +25,7 @@ if __name__ == '__main__':
                   e_greedy_increment=0.001,
                   e_greedy_start=0,
                   batch_size=32,
-                  replace_target_iter=1000)
+                  replace_target_iter=10000)
     obs = np.zeros((frame_len, state.shape[0], state.shape[1]))
     for i in range(frame_len):
         env.render()
@@ -102,7 +99,7 @@ if __name__ == '__main__':
 
         brain.store_transition(reward=reward, action=action, obs_=obs)
         last_info = info
-        if step % 200 == 0:
+        if step % 4 == 0:
             brain.double_learn()
         if done:
             env.reset()

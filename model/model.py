@@ -113,16 +113,16 @@ class DuelingCNN(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2)
         )
-        self.Advantage_fc4 = nn.Linear(in_features=2 * 3 * 128, out_features=256)
+        self.Advantage_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
         self.Advantage_fc5 = nn.Linear(in_features=256, out_features=num_action)
 
-        self.Value_fc4 = nn.Linear(in_features=2 * 3 * 128, out_features=256)
+        self.Value_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
         self.Value_fc5 = nn.Linear(in_features=256, out_features=1)
 
-    def forward(self, x):
-        x = self.conv1(x)  # 32 29,31
-        x = self.conv2(x)  # 64 6 6
-        x = self.conv3(x)  # 128 2 3
+    def forward(self, x): # 8 200 200
+        x = self.conv1(x)  # 32 24,24
+        x = self.conv2(x)  # 64 5 5
+        x = self.conv3(x)  # 128 2 2
         A = self.Advantage_fc4(x.view(x.size(0), -1))
         A = self.Advantage_fc5(A)
         V = self.Value_fc4(x.view(x.size(0), -1))
