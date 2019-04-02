@@ -82,7 +82,6 @@ class Brain:
         self.loss_func = Loss()
         self.abs_errors_func = AbsErrorLoss()
         # self.loss_func = nn.CrossEntropyLoss()
-        self.abs_errors = torch
         self.save_step = 10000
         self.learn_step = 0
 
