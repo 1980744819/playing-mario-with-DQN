@@ -49,7 +49,7 @@ if __name__ == '__main__':
     last_info = env.unwrapped._get_info()
     while True:
         last_frame = brain.get_last_memory()
-        get_gif(last_frame)
+        # get_gif(last_frame)
         action = brain.choose_action(last_frame)
         obs_, re, done, info = env.step(action)
         if done:
