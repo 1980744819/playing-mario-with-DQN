@@ -21,7 +21,7 @@ if __name__ == '__main__':
     state = env.reset()
     state = RGB2gray(state)
     frame_len = 4
-    memory_size = 1000000
+    memory_size = 1500
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -41,7 +41,7 @@ if __name__ == '__main__':
         obs = RGB2gray(obs)
         env.render()
         re /= 15.0
-        brain.store_transition(reward=re, action=action, obs_=obs)
+        brain.store_transition(action=action, reward=re, obs_=obs)
         if done:
             env.reset()
     step = 1
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             print(last_info)
             print(info)
 
-        brain.store_transition(reward=reward, action=action, obs_=obs_)
+        brain.store_transition(action=action, reward=reward, obs_=obs_)
         last_info = info
         if step % 30 == 0:
             brain.double_learn()

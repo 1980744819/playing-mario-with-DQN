@@ -115,7 +115,7 @@ class Brain:
         return res
 
     def store_start_frame(self, obs):
-        self.memory.store_frame(obs)
+        self.memory.store_obs(obs)
 
     def double_learn(self):
         if self.learn_step_count % self.replace_target_iter == 0:

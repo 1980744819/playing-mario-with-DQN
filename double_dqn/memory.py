@@ -13,10 +13,13 @@ class Memory:
         self.index = 0
         self.count = 0
         self.num_in_memory = 0
-        self.obs = np.zeros((size, frame_len, w, h), dtype=np.uint8)
+        self.frame_len = frame_len
+        self.obs = np.zeros((size, w, h), dtype=np.uint8)
         self.actions = np.zeros((size,), dtype=np.uint8)
         self.rewards = np.zeros((size,), dtype=np.float32)
         self.obs_shape = [w, h]
+        self.w = w
+        self.h = h
 
     def store_transition(self, action, reward, obs_):
         index = int((self.index + 1) % self.size)
@@ -30,18 +33,36 @@ class Memory:
 
     def get_memory(self, batch_size):
         nums = np.random.choice(self.num_in_memory, size=batch_size)
-        obs_frames = self.obs[nums]
+        obs_batch = np.zeros((batch_size, self.frame_len, self.w, self.h))
+        obs_batch_ = np.zeros((batch_size, self.frame_len, self.w, self.h))
+        for i in range(len(nums)):
+            obs_start = nums[i] - self.frame_len + 1
+            obs_end = nums[i]
+            if obs_start < 0:
+                obs_start += self.num_in_memory
+                obs_batch[i] = np.concatenate((self.obs[obs_start:self.num_in_memory ], self.obs[0:obs_end + 1]))
+            else:
+                obs_batch[i] = self.obs[obs_start:obs_end + 1]
+            obs_start_ = nums[i]
+            obs_end_ = nums[i] + self.frame_len - 1
+            if obs_end_ >=self.num_in_memory:
+                obs_end_ -= self.num_in_memory
+                obs_batch_[i] = np.concatenate((self.obs[obs_start_:self.num_in_memory ], self.obs[0:obs_end_ + 1]))
+            else:
+                obs_batch_[i] = self.obs[obs_start_:obs_end_ + 1]
         action_batch = self.actions[nums]
-        rewards = self.rewards[nums]
-        nums += 1
-        nums %= self.size
-
-        obs_after_frames = self.obs[nums]
-
-        return obs_frames, action_batch, rewards, obs_after_frames
+        reward_batch = self.rewards[nums]
+        return obs_batch, action_batch, reward_batch, obs_batch_
 
     def get_last_frame(self):
-        return self.obs[(self.index - 1) % self.size]
+        start = self.index - self.frame_len + 1
+        end = self.index
+        if start < 0:
+            start += self.num_in_memory
+            obs_frame = np.concatenate((self.obs[start:self.num_in_memory + 1], self.obs[0:end + 1]))
+        else:
+            obs_frame = self.obs[start:end + 1]
+        return obs_frame
 
-    def store_frame(self, obs):
+    def store_obs(self, obs):
         self.obs[self.index] = obs
