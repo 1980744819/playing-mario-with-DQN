@@ -121,8 +121,8 @@ class Brain:
         if self.learn_step_count % self.replace_target_iter == 0:
             self.q_next.load_state_dict(self.q_eval.state_dict())
         if self.learn_step == self.save_step:
-            torch.save(self.q_eval.state_dict(), 'q_eval.pkl')
-            torch.save(self.q_next.state_dict(), 'q_next.pkl')
+            torch.save(self.q_eval.state_dict(), save_q_eval_path)
+            torch.save(self.q_next.state_dict(), save_q_next_path)
             self.learn_step = 0
         obs_batch, act_batch, reward_batch, obs_batch_ = self.memory.get_memory(self.batch_size)
         obs_batch = Variable(torch.from_numpy(obs_batch).type(dtype))

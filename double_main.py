@@ -18,7 +18,7 @@ def RGB2gray(obs):
 
 
 if __name__ == '__main__':
-    state = env.reset()
+    state = env.reset()  # 240 256 3
     state = RGB2gray(state)
     frame_len = 4
     memory_size = 1500
