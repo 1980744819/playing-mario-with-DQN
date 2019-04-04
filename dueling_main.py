@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @File  : dueling.py
+# @File  : dueling_main.py
 # @Author: zixiao
 # @Date  : 2019-04-01
 # @Desc  :

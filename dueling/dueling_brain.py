@@ -7,11 +7,12 @@
 from dueling.model import DuelingCNN as CNN
 from dueling.memory import Memory
 import numpy as np
-from settings.conf import *
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import os
+save_q_eval_path = 'dueling/save_pkl/q_eval.pkl'
+save_q_next_path = 'dueling/save_pkl/q_next.pkl'
 
 USE_CUDA = torch.cuda.is_available()
 if torch.cuda.is_available():

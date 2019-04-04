@@ -52,8 +52,8 @@ class SumTree(object):
                     value -= self.tree[left_index]
                     parent_index = right_index
         leaf_index = parent_index
-        if leaf_index == 0:
-            leaf_index = 1
+        # if leaf_index == 0:
+        #     leaf_index = 1
         data_index = leaf_index - (self.data_size - 1)
         # data_index_ = (data_index + 1) % self.data_size
         obs_frame, obs_frame_ = self.get_frame(data_index)
