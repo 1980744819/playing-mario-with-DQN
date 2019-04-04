@@ -40,7 +40,7 @@ if __name__ == '__main__':
         'xscrollLo': 0
     }
     brain.store_start_frame(state)
-    for i in range(int(memory_size ) + 5):
+    for i in range(int(memory_size / 10) + 5):
         act_index = sample()
         obs, re, done, info = env.step(actions[act_index])
 

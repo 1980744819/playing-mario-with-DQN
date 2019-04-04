@@ -18,6 +18,8 @@ class SumTree(object):
         self.data_reward = np.zeros(size, dtype=np.float32)
         self.data_action = np.zeros(size, dtype=np.uint8)
         self.frame_len = frame_len
+        self.num_data = 0
+        self.data_count = 0
 
     def add(self, tree_point, action, reward, obs_):
         tree_index = self.data_index + self.data_size - 1
@@ -26,6 +28,8 @@ class SumTree(object):
         self.data_index = int((self.data_index + 1) % self.data_size)
         self.data_obs[self.data_index] = obs_
         self.update(tree_index, tree_point)
+        self.data_count += 1
+        self.num_data = min(self.data_size, self.data_count)
 
     def update(self, tree_index, pointer):
         change = pointer - self.tree[tree_index]
@@ -68,8 +72,8 @@ class SumTree(object):
         start = self.data_index - self.frame_len + 1
         end = self.data_index
         if start < 0:
-            start += self.data_size
-            obs_frame = np.concatenate((self.data_obs[start:],
+            start += self.num_data
+            obs_frame = np.concatenate((self.data_obs[start:self.num_data],
                                         self.data_obs[0:end + 1]))
         else:
             obs_frame = self.data_obs[start:end + 1]
@@ -81,13 +85,13 @@ class SumTree(object):
         obs_start_ = int((data_index + 1) % self.data_size)
         obs_end_ = obs_start_ + self.frame_len - 1
         if obs_start < 0:
-            obs_start += self.data_size
-            obs_frame = np.concatenate((self.data_obs[obs_start:], self.data_obs[0:obs_end + 1]))
+            obs_start += self.num_data
+            obs_frame = np.concatenate((self.data_obs[obs_start:self.num_data], self.data_obs[0:obs_end + 1]))
         else:
             obs_frame = self.data_obs[obs_start:obs_end + 1]
-        if obs_end_ >= self.data_size:
-            obs_end_ -= self.data_size
-            obs_frame_ = np.concatenate((self.data_obs[obs_start_:], self.data_obs[0:obs_end_ + 1]))
+        if obs_end_ >= self.num_data:
+            obs_end_ -= self.num_data
+            obs_frame_ = np.concatenate((self.data_obs[obs_start_:self.num_data], self.data_obs[0:obs_end_ + 1]))
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
         return obs_frame, obs_frame_
@@ -123,7 +127,8 @@ class Memory(object):
 
         priority_segment = self.tree.total_weight / batch_size
         self.beta = np.min([1, self.beta + self.beta_increment_per_sampling])
-        min_probability = np.min(self.tree.tree[-self.tree.data_size:]) / self.tree.total_weight
+        end = self.tree.data_size + self.tree.num_data - 1
+        min_probability = np.min(self.tree.tree[-self.tree.data_size:end]) / self.tree.total_weight
         values = []
         leafs = []
         leaf_values = []
