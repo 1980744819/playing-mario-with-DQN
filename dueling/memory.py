@@ -124,6 +124,9 @@ class Memory(object):
         priority_segment = self.tree.total_weight / batch_size
         self.beta = np.min([1, self.beta + self.beta_increment_per_sampling])
         min_probability = np.min(self.tree.tree[-self.tree.data_size:]) / self.tree.total_weight
+        values = []
+        leafs = []
+        leaf_values = []
         for i in range(batch_size):
             low = priority_segment * i
             high = priority_segment * (i + 1)
@@ -133,10 +136,17 @@ class Memory(object):
             IS_weights[i, 0] = np.power(probability / min_probability, -self.beta)
             batch_leaf_index[i] = leaf_index
 
+            values.append(value)
+            leafs.append(leaf_index)
+            leaf_values.append(leaf_value)
+
             batch_obs[i] = obs
             batch_obs_[i] = obs_
             batch_action[i] = action
             batch_reward[i] = reward
+        print(values)
+        print(leafs)
+        print(leaf_values)
         return batch_leaf_index, IS_weights, batch_obs, batch_action, batch_reward, batch_obs_
 
     def batch_update(self, tree_index, abs_errors):
