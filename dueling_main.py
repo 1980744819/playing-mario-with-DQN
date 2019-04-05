@@ -22,7 +22,7 @@ if __name__ == '__main__':
     state = env.reset()
     state = RGB2gray(state)
     frame_len = 8
-    memory_size = 1500
+    memory_size = 10000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -35,7 +35,7 @@ if __name__ == '__main__':
                   batch_size=32,
                   replace_target_iter=10000)
     brain.store_start_frame(state)
-    for i in range(memory_size + 5):
+    for i in range(int(memory_size / 10) + 5):
         print(i)
         action = env.action_space.sample()
         obs, re, done, info = env.step(action)
