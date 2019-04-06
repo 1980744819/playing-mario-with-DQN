@@ -11,8 +11,7 @@ from break_out.brain import Brain
 
 
 def RGB2gray(observation):
-    img = Image.fromarray(observation)
-    # .crop((40, 0, 120, 210))
+    img = Image.fromarray(observation).crop((8, 32, 152, 210))
     # img.show()
     img = img.convert('L')
     return np.asarray(img)
@@ -22,7 +21,7 @@ if __name__ == '__main__':
     state = env.reset()  # 210 160 3
     state = RGB2gray(state)
     frame_len = 4
-    memory_size = 150000
+    memory_size = 15000
 
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
