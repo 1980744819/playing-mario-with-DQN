@@ -21,8 +21,8 @@ def RGB2gray(obs):
 if __name__ == '__main__':
     state = env.reset()
     state = RGB2gray(state)
-    frame_len = 8
-    memory_size = 10000
+    frame_len = 4
+    memory_size = 1000000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -47,12 +47,17 @@ if __name__ == '__main__':
             env.reset()
     step = 1
     last_info = env.unwrapped._get_info()
+    recording = []
     while True:
         last_frame = brain.get_last_memory()
         # get_gif(last_frame)
         action = brain.choose_action(last_frame)
         obs_, re, done, info = env.step(action)
+        recording.append(obs_)
         if done:
+            if last_info['world'] == 2:
+                get_gif(recording, step)
+                recording = []
             obs_ = env.reset()
         obs_ = RGB2gray(obs_)
         env.render()

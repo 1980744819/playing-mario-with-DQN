@@ -14,8 +14,8 @@ def RGB_to_gray(obs):
     return np.asarray(img)
 
 
-def get_gif(ims):
+def get_gif(ims, name):
     sequence = []
     for item in ims:
         sequence.append(Image.fromarray(item))
-    sequence[0].save('tmp.gif', save_all=True, append_images=sequence[1:])
+    sequence[0].save(str(name) + '.gif', save_all=True, append_images=sequence[1:])
