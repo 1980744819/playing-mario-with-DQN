@@ -10,6 +10,7 @@ from dueling.dueling_brain import Brain
 import numpy as np
 from utils.img import get_gif
 import PIL.Image as Image
+import copy
 
 
 def RGB2gray(obs):
@@ -20,9 +21,10 @@ def RGB2gray(obs):
 
 if __name__ == '__main__':
     state = env.reset()
+    w, h, deep = state.shape
     state = RGB2gray(state)
     frame_len = 4
-    memory_size = 1000000
+    memory_size = 10000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -52,12 +54,12 @@ if __name__ == '__main__':
         last_frame = brain.get_last_memory()
         # get_gif(last_frame)
         action = brain.choose_action(last_frame)
-        obs_, re, done, info = env.step(action)
-        recording.append(obs_)
+        obs_, re, done, info = env.step(1)
+        recording.append(copy.deepcopy(obs_))
         if done:
             if last_info['world'] == 2:
                 get_gif(recording, step)
-                recording = []
+            recording = []
             obs_ = env.reset()
         obs_ = RGB2gray(obs_)
         env.render()
@@ -70,7 +72,7 @@ if __name__ == '__main__':
 
         brain.store_transition(reward=reward, action=action, obs_=obs_)
         last_info = info
-        if step % 4 == 0:
-            brain.double_learn()
+        # if step % 4 == 0:
+        #     brain.double_learn()
 
         step += 1

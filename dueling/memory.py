@@ -82,7 +82,7 @@ class SumTree(object):
     def get_frame(self, data_index):
         obs_start = data_index - self.frame_len + 1
         obs_end = data_index
-        obs_start_ = int((data_index + 1) % self.data_size)
+        obs_start_ = int((data_index + 1) % self.num_data)
         obs_end_ = obs_start_ + self.frame_len - 1
         if obs_start < 0:
             obs_start += self.num_data
@@ -94,7 +94,8 @@ class SumTree(object):
             obs_frame_ = np.concatenate((self.data_obs[obs_start_:self.num_data], self.data_obs[0:obs_end_ + 1]))
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
-        print('--------', obs_start, obs_end, obs_start_, obs_end_)
+        if obs_frame.shape[0] != self.frame_len or obs_frame_.shape[0] != self.frame_len:
+            print('--------', obs_start, obs_end, obs_start_, obs_end_)
         return obs_frame, obs_frame_
 
 
@@ -150,9 +151,9 @@ class Memory(object):
             batch_obs_[i] = obs_
             batch_action[i] = action
             batch_reward[i] = reward
-        print(values)
-        print(leafs)
-        print(leaf_values)
+        # print(values)
+        # print(leafs)
+        # print(leaf_values)
         return batch_leaf_index, IS_weights, batch_obs, batch_action, batch_reward, batch_obs_
 
     def batch_update(self, tree_index, abs_errors):
