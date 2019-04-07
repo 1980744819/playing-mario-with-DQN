@@ -94,6 +94,7 @@ class SumTree(object):
             obs_frame_ = np.concatenate((self.data_obs[obs_start_:self.num_data], self.data_obs[0:obs_end_ + 1]))
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
+        print('--------', obs_start, obs_end, obs_start_, obs_end_)
         return obs_frame, obs_frame_
 
 
