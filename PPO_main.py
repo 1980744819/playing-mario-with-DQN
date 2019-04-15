@@ -81,5 +81,6 @@ if __name__ == '__main__':
         next_value = next_value.cpu().detach().numpy()[0][0]
 
         brain.update_model(next_value)
+        brain.memory.clear()
 
         # print(1)
