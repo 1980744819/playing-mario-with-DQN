@@ -49,6 +49,6 @@ if __name__ == '__main__':
             if done:
                 print("done")
                 if len(agent.buffer) >= agent.batch_size:
-                    print("update")
+                    print("buffer length is ", len(agent.buffer))
                     agent.update(i_epoch)
                 break
