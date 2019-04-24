@@ -79,7 +79,7 @@ class PPO:
             R = r + self.gamma * R
             Gt.insert(0, R)
         Gt = torch.tensor(Gt, dtype=torch.float)
-        for i in range(int(len(self.buffer)/100)):
+        for i in range(int(len(self.buffer) / 100)):
             for index in BatchSampler(SubsetRandomSampler(range(len(self.buffer))), self.batch_size, False):
                 if self.training_step % 1000 == 0:
                     print('I_ep {} ，train {} times'.format(i_ep, self.training_step))
@@ -106,3 +106,4 @@ class PPO:
                 self.critic_net_optimizer.step()
                 self.training_step += 1
         del self.buffer[:]
+        print('train_step: ', self.training_step)
