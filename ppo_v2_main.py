@@ -39,14 +39,16 @@ if __name__ == '__main__':
             action, action_prob = agent.select_action(obs)
 
             next_state, reward, done, info = env.step(action)
-            print(action, reward)
             next_state = RGB2gray(next_state)
             reward /= 15.0
             trans = Transition(deepcopy(obs), action, action_prob, reward, deepcopy(next_state))
+            agent.store_transition(trans)
             if render:
                 env.render()
             obs.append(deepcopy(next_state))
             if done:
+                print("done")
                 if len(agent.buffer) >= agent.batch_size:
+                    print("update")
                     agent.update(i_epoch)
                 break
