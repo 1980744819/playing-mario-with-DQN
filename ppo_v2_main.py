@@ -28,7 +28,7 @@ if __name__ == '__main__':
     render = True
     num_channel = 4
     obs = deque(maxlen=num_channel)
-    for i_epoch in range(1000):
+    for i_epoch in range(100000):
         state = env.reset()
         state = RGB2gray(state)
         for i in range(num_channel):

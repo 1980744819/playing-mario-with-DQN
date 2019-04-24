@@ -106,4 +106,3 @@ class PPO:
                 self.critic_net_optimizer.step()
                 self.training_step += 1
         del self.buffer[:]
-        print('train_step: ', self.training_step)
