@@ -99,7 +99,7 @@ class PPO:
                     print('I_ep {} ，train {} times'.format(i_ep, self.training_step))
                 Gt_index = Gt[index].view(-1, 1)
                 V = self.critic_net(state[index].type(dtype))
-                V.cpu()
+                V = V.cpu()
                 delta = Gt_index - V
                 advantage = delta.detach()
                 action_prob = self.actor_net(state[index].type(dtype)).cpu().gather(1, action[index])  # new policy
