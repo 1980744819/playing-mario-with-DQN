@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.autograd import Variable
 from torch.distributions import Categorical
 from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
 
@@ -21,6 +22,18 @@ from PPO_v2.models import Actor, Critic
 Transition = namedtuple('Transition', ['state', 'action', 'a_log_prob', 'reward', 'next_state'])
 
 save_path = './save_pkl'
+USE_CUDA = torch.cuda.is_available()
+if torch.cuda.is_available():
+    dtype = torch.cuda.FloatTensor
+else:
+    dtype = torch.FloatTensor
+
+
+class Variable(Variable):
+    def __init__(self, data, *args, **kwargs):
+        if USE_CUDA:
+            data = data.cuda()
+        super(Variable, self).__init__(data, *args, **kwargs)
 
 
 class PPO:
@@ -34,8 +47,8 @@ class PPO:
 
     def __init__(self):
         self.num_channel = 4
-        self.actor_net = Actor(self.num_channel, self.num_action)
-        self.critic_net = Critic(self.num_channel)
+        self.actor_net = Actor(self.num_channel, self.num_action).type(dtype)
+        self.critic_net = Critic(self.num_channel).type(dtype)
         self.buffer = []
         self.counter = 0
         self.training_step = 0
@@ -46,9 +59,10 @@ class PPO:
 
     def select_action(self, state):
         state = np.array(state)
-        state = torch.from_numpy(state).float().unsqueeze(0)
+        state = torch.from_numpy(state).float().unsqueeze(0).type(dtype)
         with torch.no_grad():
             action_prob = self.actor_net(state)
+        action_prob = action_prob.cpu()
         c = Categorical(action_prob)
         action = c.sample()
         return action.item(), action_prob[:, action.item()].item()
@@ -57,7 +71,7 @@ class PPO:
         state = torch.from_numpy(state)
         with torch.no_grad():
             value = self.critic_net(state)
-        return value.item()
+        return value.cpu().item()
 
     def save_param(self):
         torch.save(self.actor_net.state_dict(), save_path + '/actor_net' + str(time.time())[:10], +'.pkl')
@@ -84,10 +98,11 @@ class PPO:
                 if self.training_step % 1000 == 0:
                     print('I_ep {} ，train {} times'.format(i_ep, self.training_step))
                 Gt_index = Gt[index].view(-1, 1)
-                V = self.critic_net(state[index])
+                V = self.critic_net(state[index].type(dtype))
+                V.cpu()
                 delta = Gt_index - V
                 advantage = delta.detach()
-                action_prob = self.actor_net(state[index]).gather(1, action[index])  # new policy
+                action_prob = self.actor_net(state[index].type(dtype)).cpu().gather(1, action[index])  # new policy
 
                 ratio = (action_prob / old_action_log_prob[index])
                 surr1 = ratio * advantage
