@@ -46,8 +46,9 @@ if __name__ == '__main__':
             if render:
                 env.render()
             obs.append(deepcopy(next_state))
-            if done:
+            if reward == -1.0:
                 if len(agent.buffer) >= agent.batch_size:
                     print("buffer length is ", len(agent.buffer))
                     agent.update(i_epoch)
+            if done:
                 break
