@@ -104,7 +104,7 @@ class PPO:
                 advantage = delta.detach()
                 action_prob = self.actor_net(state[index].type(dtype)).cpu().gather(1, action[index])  # new policy
 
-                ratio = (action_prob / old_action_log_prob[index])
+                ratio = torch.exp(action_prob / old_action_log_prob[index])
                 surr1 = ratio * advantage
                 surr2 = torch.clamp(ratio, 1 - self.clip_param, 1 + self.clip_param) * advantage
                 action_loss = -torch.min(surr1, surr2).mean()  # MAX->MIN desent
