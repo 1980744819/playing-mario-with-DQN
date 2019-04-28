@@ -137,7 +137,7 @@ class Memory(object):
         for i in range(batch_size):
             low = priority_segment * i
             high = priority_segment * (i + 1)
-            print('\r', 'low: ', low, 'high', high, 'priority_segment:', priority_segment, 'value:', value,
+            print('\r', 'low: ', low, 'high', high, 'priority_segment:', priority_segment,
                   'total_weight: ', self.tree.total_weight, 'min_probability: ', min_probability, 'end: ', end,
                   'data_size: ',
                   self.tree.data_size, 'num_data: ', self.tree.num_data, end='')
