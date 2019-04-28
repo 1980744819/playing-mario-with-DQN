@@ -4,13 +4,16 @@
 # @Author: zixiao
 # @Date  : 2019-04-01
 # @Desc  :
-from dueling.model import DuelingCNN as CNN
-from dueling.memory import Memory
+import os
+
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-import os
+
+from dueling.memory import Memory
+from dueling.model import DuelingCNN as CNN
+
 save_q_eval_path = 'dueling/save_pkl/q_eval.pkl'
 save_q_next_path = 'dueling/save_pkl/q_next.pkl'
 
@@ -138,7 +141,7 @@ class Brain:
         return self.memory.get_last_frame()
 
     def double_learn(self):
-        print(self.learn_step_count)
+        print('\r', self.learn_step_count, end='')
         if self.learn_step_count == self.replace_target_iter:
             self.learn_step_count = 0
             self.q_next.load_state_dict(self.q_eval.state_dict())
