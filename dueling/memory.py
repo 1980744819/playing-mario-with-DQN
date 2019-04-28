@@ -128,6 +128,7 @@ class Memory(object):
         IS_weights = np.zeros((batch_size, 1))
 
         priority_segment = self.tree.total_weight / batch_size
+        print(self.tree.total_weight)
         self.beta = np.min([1, self.beta + self.beta_increment_per_sampling])
         end = self.tree.data_size + self.tree.num_data - 1
         min_probability = np.min(self.tree.tree[-self.tree.data_size:end]) / self.tree.total_weight
