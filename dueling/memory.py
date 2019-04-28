@@ -128,7 +128,7 @@ class Memory(object):
         IS_weights = np.zeros((batch_size, 1))
 
         priority_segment = self.tree.total_weight / batch_size
-        print(self.tree.total_weight)
+        print('total_weight: ', self.tree.total_weight)
         self.beta = np.min([1, self.beta + self.beta_increment_per_sampling])
         end = self.tree.data_size + self.tree.num_data - 1
         min_probability = np.min(self.tree.tree[-self.tree.data_size:end]) / self.tree.total_weight
@@ -138,10 +138,10 @@ class Memory(object):
         for i in range(batch_size):
             low = priority_segment * i
             high = priority_segment * (i + 1)
-            print('\r', 'low: ', low, 'high', high, 'priority_segment:', priority_segment,
+            print('low: ', low, 'high', high, 'priority_segment:', priority_segment,
                   'total_weight: ', self.tree.total_weight, 'min_probability: ', min_probability, 'end: ', end,
                   'data_size: ',
-                  self.tree.data_size, 'num_data: ', self.tree.num_data, end='')
+                  self.tree.data_size, 'num_data: ', self.tree.num_data, )
             value = np.random.uniform(low, high)
             leaf_index, leaf_value, obs, action, reward, obs_ = self.tree.get_leaf(value)
             probability = leaf_value / self.tree.total_weight
