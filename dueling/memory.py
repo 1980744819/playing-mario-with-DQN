@@ -95,7 +95,7 @@ class SumTree(object):
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
         if obs_frame.shape[0] != self.frame_len or obs_frame_.shape[0] != self.frame_len:
-            print('--------', obs_start, obs_end, obs_start_, obs_end_)
+            print('\r --------', obs_start, obs_end, obs_start_, obs_end_)
         return obs_frame, obs_frame_
 
 
@@ -140,6 +140,8 @@ class Memory(object):
             value = np.random.uniform(low, high)
             leaf_index, leaf_value, obs, action, reward, obs_ = self.tree.get_leaf(value)
             probability = leaf_value / self.tree.total_weight
+            print('\r', low, high, priority_segment, value, leaf_index, leaf_value, action, self.tree.total_weight,
+                  probability, min_probability, end, self.tree.data_size, self.tree.num_data, end='')
             IS_weights[i, 0] = np.power(probability / min_probability, -self.beta)
             batch_leaf_index[i] = leaf_index
 
