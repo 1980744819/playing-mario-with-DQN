@@ -6,6 +6,7 @@
 # @Desc  :
 import numpy as np
 from PIL import Image, ImageSequence
+import imageio
 
 
 def RGB_to_gray(obs):
@@ -18,4 +19,6 @@ def get_gif(ims, name):
     sequence = []
     for item in ims:
         sequence.append(Image.fromarray(item))
-    sequence[0].save(str(name) + '.gif', save_all=True, append_images=sequence[1:])
+    sequence[0].save(str(name) + '.gif', format='GIF', save_all=True, append_images=sequence[1:], duration=100)
+
+# def get_gif_2(ims, names):

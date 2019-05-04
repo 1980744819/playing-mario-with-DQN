@@ -26,7 +26,7 @@ if __name__ == '__main__':
     w, h, deep = state.shape
     state = RGB2gray(state)
     frame_len = 4
-    memory_size = 100000
+    memory_size = 1000000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                   batch_size=32,
                   replace_target_iter=10000)
     brain.store_start_frame(state)
-    for i in range(int(memory_size / 10) + 5):
+    for i in range(memory_size + 5):
         print('\r', i)
         action = env.action_space.sample()
         obs, re, done, info = env.step(action)
@@ -52,7 +52,10 @@ if __name__ == '__main__':
     step = 1
     last_info = env.unwrapped._get_info()
     recording = []
-    while True:
+    reward_list = []
+    r = 0
+    t = 0
+    while t < 4000000:
         last_frame = brain.get_last_memory()
         # get_gif(last_frame)
         action = brain.choose_action(last_frame)
@@ -63,10 +66,13 @@ if __name__ == '__main__':
                 get_gif(recording, step)
             recording = []
             obs_ = env.reset()
+            reward_list.append(r)
+            r = 0
         obs_ = RGB2gray(obs_)
         env.render()
-        reward = re / 15.0
-        print('\r', action, reward, brain.epsilon, step, end='')
+        reward = re
+        r += reward
+        print(action, reward, brain.epsilon, step, end='')
         if reward < -0.6:
             print(reward)
             print(last_info)
@@ -78,3 +84,4 @@ if __name__ == '__main__':
             brain.double_learn()
 
         step += 1
+    np.save('r.npy', np.array(reward_list))

@@ -30,8 +30,8 @@ class DuelingCNN(nn.Module):
         self.Advantage_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
         self.Advantage_fc5 = nn.Linear(in_features=256, out_features=num_action)
 
-        self.Value_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
-        self.Value_fc5 = nn.Linear(in_features=256, out_features=1)
+        self.Value_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=512)
+        self.Value_fc5 = nn.Linear(in_features=512, out_features=1)
 
     def forward(self, x):  # 8 200 200
         x = self.conv1(x)  # 32 24,24

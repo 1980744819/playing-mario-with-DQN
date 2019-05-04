@@ -13,7 +13,7 @@ class SumTree(object):
     def __init__(self, size, frame_len, w, h):
         self.data_size = size
         self.tree_size = 2 * size - 1
-        self.tree = np.zeros(self.tree_size)
+        self.tree = np.zeros(self.tree_size,dtype=np.float32)
         self.data_obs = np.zeros((size, w, h), dtype=np.uint8)
         self.data_reward = np.zeros(size, dtype=np.float32)
         self.data_action = np.zeros(size, dtype=np.uint8)
@@ -94,8 +94,8 @@ class SumTree(object):
             obs_frame_ = np.concatenate((self.data_obs[obs_start_:self.num_data], self.data_obs[0:obs_end_ + 1]))
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
-        if obs_frame.shape[0] != self.frame_len or obs_frame_.shape[0] != self.frame_len:
-            print('\r --------', obs_start, obs_end, obs_start_, obs_end_)
+        # if obs_frame.shape[0] != self.frame_len or obs_frame_.shape[0] != self.frame_len:
+            # print('\r --------', obs_start, obs_end, obs_start_, obs_end_)
         return obs_frame, obs_frame_
 
 
@@ -138,10 +138,10 @@ class Memory(object):
         for i in range(batch_size):
             low = priority_segment * i
             high = priority_segment * (i + 1)
-            print('low: ', low, 'high', high, 'priority_segment:', priority_segment,
-                  'total_weight: ', self.tree.total_weight, 'min_probability: ', min_probability, 'end: ', end,
-                  'data_size: ',
-                  self.tree.data_size, 'num_data: ', self.tree.num_data, )
+            # print('low: ', low, 'high', high, 'priority_segment:', priority_segment,
+            #       'total_weight: ', self.tree.total_weight, 'min_probability: ', min_probability, 'end: ', end,
+            #       'data_size: ',
+            #       self.tree.data_size, 'num_data: ', self.tree.num_data, )
             value = np.random.uniform(low, high)
             leaf_index, leaf_value, obs, action, reward, obs_ = self.tree.get_leaf(value)
             probability = leaf_value / self.tree.total_weight
