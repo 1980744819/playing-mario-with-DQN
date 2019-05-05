@@ -26,7 +26,7 @@ if __name__ == '__main__':
     w, h, deep = state.shape
     state = RGB2gray(state)
     frame_len = 4
-    memory_size = 1500
+    memory_size = 1000000
     brain = Brain(memory_size=memory_size,
                   input_args=frame_len,
                   num_actions=7,
