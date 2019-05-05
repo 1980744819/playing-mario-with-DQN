@@ -30,8 +30,8 @@ class DuelingCNN(nn.Module):
         self.Advantage_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=512)
         self.Advantage_fc5 = nn.Linear(in_features=512, out_features=num_action)
 
-        self.Value_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
-        self.Value_fc5 = nn.Linear(in_features=256, out_features=1)
+        self.Value_fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=512)
+        self.Value_fc5 = nn.Linear(in_features=512, out_features=1)
 
     def forward(self, x):  # 8 200 200
         x = self.conv1(x)  # 32 24,24
@@ -43,3 +43,34 @@ class DuelingCNN(nn.Module):
         V = self.Value_fc5(V)
         A_mean = torch.mean(A, dim=1, keepdim=True)
         return V + (A - A_mean)
+
+
+class CNN(nn.Module):
+    def __init__(self, in_channels, num_action):
+        super(CNN, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels, out_channels=32, kernel_size=8, stride=4),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=2, stride=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2)
+        )
+        self.fc4 = nn.Linear(in_features=2 * 2 * 128, out_features=256)
+        self.fc5 = nn.Linear(in_features=256, out_features=num_action)
+
+    def forward(self, x):  # 8 200 200
+        x = self.conv1(x)  # 32 24,24
+        x = self.conv2(x)  # 64 5 5
+        x = self.conv3(x)  # 128 2 2
+        x = self.fc4(x.view(x.size(0), -1))
+        x = self.fc5(x)
+        return x

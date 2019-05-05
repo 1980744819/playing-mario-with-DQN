@@ -13,11 +13,13 @@ class SumTree(object):
     def __init__(self, size, frame_len, w, h):
         self.data_size = size
         self.tree_size = 2 * size - 1
-        self.tree = np.zeros(self.tree_size)
+        self.tree = np.zeros(self.tree_size,dtype=np.float32)
         self.data_obs = np.zeros((size, w, h), dtype=np.uint8)
         self.data_reward = np.zeros(size, dtype=np.float32)
         self.data_action = np.zeros(size, dtype=np.uint8)
         self.frame_len = frame_len
+        self.num_data = 0
+        self.data_count = 0
 
     def add(self, tree_point, action, reward, obs_):
         tree_index = self.data_index + self.data_size - 1
@@ -26,6 +28,8 @@ class SumTree(object):
         self.data_index = int((self.data_index + 1) % self.data_size)
         self.data_obs[self.data_index] = obs_
         self.update(tree_index, tree_point)
+        self.data_count += 1
+        self.num_data = min(self.data_size, self.data_count)
 
     def update(self, tree_index, pointer):
         change = pointer - self.tree[tree_index]
@@ -68,8 +72,8 @@ class SumTree(object):
         start = self.data_index - self.frame_len + 1
         end = self.data_index
         if start < 0:
-            start += self.data_size
-            obs_frame = np.concatenate((self.data_obs[start:],
+            start += self.num_data
+            obs_frame = np.concatenate((self.data_obs[start:self.num_data],
                                         self.data_obs[0:end + 1]))
         else:
             obs_frame = self.data_obs[start:end + 1]
@@ -78,18 +82,20 @@ class SumTree(object):
     def get_frame(self, data_index):
         obs_start = data_index - self.frame_len + 1
         obs_end = data_index
-        obs_start_ = int((data_index + 1) % self.data_size)
+        obs_start_ = int((data_index + 1) % self.num_data)
         obs_end_ = obs_start_ + self.frame_len - 1
         if obs_start < 0:
-            obs_start += self.data_size
-            obs_frame = np.concatenate((self.data_obs[obs_start:], self.data_obs[0:obs_end + 1]))
+            obs_start += self.num_data
+            obs_frame = np.concatenate((self.data_obs[obs_start:self.num_data], self.data_obs[0:obs_end + 1]))
         else:
             obs_frame = self.data_obs[obs_start:obs_end + 1]
-        if obs_end_ >= self.data_size:
-            obs_end_ -= self.data_size
-            obs_frame_ = np.concatenate((self.data_obs[obs_start_:], self.data_obs[0:obs_end_ + 1]))
+        if obs_end_ >= self.num_data:
+            obs_end_ -= self.num_data
+            obs_frame_ = np.concatenate((self.data_obs[obs_start_:self.num_data], self.data_obs[0:obs_end_ + 1]))
         else:
             obs_frame_ = self.data_obs[obs_start_:obs_end_ + 1]
+        # if obs_frame.shape[0] != self.frame_len or obs_frame_.shape[0] != self.frame_len:
+            # print('\r --------', obs_start, obs_end, obs_start_, obs_end_)
         return obs_frame, obs_frame_
 
 
@@ -122,17 +128,24 @@ class Memory(object):
         IS_weights = np.zeros((batch_size, 1))
 
         priority_segment = self.tree.total_weight / batch_size
+        print('total_weight: ', self.tree.total_weight)
         self.beta = np.min([1, self.beta + self.beta_increment_per_sampling])
-        min_probability = np.min(self.tree.tree[-self.tree.data_size:]) / self.tree.total_weight
+        end = self.tree.data_size + self.tree.num_data - 1
+        min_probability = np.min(self.tree.tree[-self.tree.data_size:end]) / self.tree.total_weight
         values = []
         leafs = []
         leaf_values = []
         for i in range(batch_size):
             low = priority_segment * i
             high = priority_segment * (i + 1)
+            # print('low: ', low, 'high', high, 'priority_segment:', priority_segment,
+            #       'total_weight: ', self.tree.total_weight, 'min_probability: ', min_probability, 'end: ', end,
+            #       'data_size: ',
+            #       self.tree.data_size, 'num_data: ', self.tree.num_data, )
             value = np.random.uniform(low, high)
             leaf_index, leaf_value, obs, action, reward, obs_ = self.tree.get_leaf(value)
             probability = leaf_value / self.tree.total_weight
+
             IS_weights[i, 0] = np.power(probability / min_probability, -self.beta)
             batch_leaf_index[i] = leaf_index
 
@@ -144,9 +157,9 @@ class Memory(object):
             batch_obs_[i] = obs_
             batch_action[i] = action
             batch_reward[i] = reward
-        print(values)
-        print(leafs)
-        print(leaf_values)
+        # print(values)
+        # print(leafs)
+        # print(leaf_values)
         return batch_leaf_index, IS_weights, batch_obs, batch_action, batch_reward, batch_obs_
 
     def batch_update(self, tree_index, abs_errors):

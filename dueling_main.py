@@ -4,9 +4,12 @@
 # @Author: zixiao
 # @Date  : 2019-04-01
 # @Desc  :
+import copy
+
 import PIL.Image as Image
 import numpy as np
 
+# from utils.img import RGB_to_gray
 from dueling.dueling_brain import Brain
 from env.gym_super_mario_bros import env
 from utils.img import get_gif
@@ -20,6 +23,7 @@ def RGB2gray(obs):
 
 if __name__ == '__main__':
     state = env.reset()
+    w, h, deep = state.shape
     state = RGB2gray(state)
     frame_len = 4
     memory_size = 1500
@@ -36,7 +40,7 @@ if __name__ == '__main__':
                   replace_target_iter=10000)
     brain.store_start_frame(state)
     for i in range(memory_size + 5):
-        print(i)
+        print('\r', i)
         action = env.action_space.sample()
         obs, re, done, info = env.step(action)
         obs = RGB2gray(obs)
@@ -55,7 +59,7 @@ if __name__ == '__main__':
         # get_gif(last_frame)
         action = brain.choose_action(last_frame)
         obs_, re, done, info = env.step(action)
-        recording.append(obs_)
+        recording.append(copy.deepcopy(obs_))
         if done:
             if last_info['world'] == 2:
                 get_gif(recording, step)
@@ -73,7 +77,7 @@ if __name__ == '__main__':
             print(last_info)
             print(info)
 
-        brain.store_transition(reward=reward, action=action, obs_=obs_)
+        brain.store_transition(reward=reward, action=action, obs_=copy.deepcopy(obs_))
         last_info = info
         if step % 4 == 0:
             brain.double_learn()
