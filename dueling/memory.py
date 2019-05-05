@@ -159,7 +159,7 @@ class Memory(object):
             batch_reward[i] = reward
         # print(values)
         # print(leafs)
-        # print(leaf_values)
+        print(leaf_values)
         return batch_leaf_index, IS_weights, batch_obs, batch_action, batch_reward, batch_obs_
 
     def batch_update(self, tree_index, abs_errors):

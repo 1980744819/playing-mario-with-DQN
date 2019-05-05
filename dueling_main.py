@@ -82,5 +82,5 @@ if __name__ == '__main__':
         if step % 4 == 0:
             brain.double_learn()
         if step % 10000 == 0:
-            np.save(str(step) + '.npy', np.array(reward_list))
+            np.save('./npy/' + str(step) + '.npy', np.array(reward_list))
         step += 1
